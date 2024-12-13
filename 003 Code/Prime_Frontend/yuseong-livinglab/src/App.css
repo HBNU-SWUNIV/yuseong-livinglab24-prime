@@ -1,0 +1,306 @@
+/* src/App.css */
+
+/* 기본 레이아웃 */
+.App-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  padding-top: 0;
+  padding-bottom: 0;
+  background-color: #f5f5f5;
+  justify-content: space-between;
+}
+.header-center {
+  display: flex;
+  justify-content: center;  /* 수평 중앙 정렬 */
+  align-items: center;      /* 수직 중앙 정렬 */
+  flex-grow: 1;             /* 부모 요소 내에서 공간을 확장 */
+  margin-right: 245px;
+}
+/* 업로드 버튼 */
+/* App.css */
+.upload-button {
+  background-color: #1560c2; /* 배경색 */
+  color: rgb(255, 255, 255); /* 텍스트 색 */
+  font-size: 20px; /* 글자 크기 */
+  padding: 10px 20px; /* 위/아래, 왼쪽/오른쪽 여백 */
+  border: none; /* 테두리 없애기 */
+  border-radius: 8px; /* 둥근 모서리 */
+  cursor: pointer; /* 마우스 포인터를 손 모양으로 */
+  transition: background-color 0.3s ease; /* 배경색 변경 애니메이션 */
+}
+
+.upload-button:hover {
+  background-color: #4c6e4e; /* 마우스 오버 시 배경색 */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.App-header h3 {
+  font-size: 20px;
+  color: #545454;
+}
+
+.user-info-container {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+  background-color: #FEE500;
+  color: #333;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+.logo {
+  height: 40px;
+  padding: 1px;
+}
+
+
+/* 카테고리 페이지 레이아웃 */
+.category-container {
+  display: flex;
+}
+
+.category-list {
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding-right: 20px;
+  background-color: #f8f8f8;
+  padding: 20px;
+  flex-shrink: 0; /* 크기 고정 */
+}
+
+.category-button {
+  display: block;
+  margin: 10px 0;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  color: #333;
+  font-weight: bold;
+  font-size: 15px;
+
+}
+
+.category-button.active {
+  background-color: #e0e0e0;
+  color: #0056b3;
+}
+
+.category-items {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20px;
+  justify-content: flex-start;
+}
+
+.category-item {
+  width: 250px;
+  margin: 10px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.category-image {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+
+/* 네비게이션 바 */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px;
+  background-color: #b3b3b363;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #5e5e5e;
+}
+
+.navbar a:hover {
+  color: #0056b3;
+  font-weight: bold;
+}
+
+.navbar .active {
+  color: #0056b3;
+  font-weight: bold;
+}
+
+
+/* 반응형 미디어 쿼리 */
+@media (max-width: 768px) {
+  .App-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header-left,
+  .user-info-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .category-container {
+    flex-direction: column;
+  }
+
+  .category-list {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+  }
+
+  .category-items {
+    justify-content: center;
+  }
+
+  .category-item {
+    width: 100%;
+  }
+
+  .modal-content {
+    width: 90%;
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App-header h3 {
+    font-size: 16px;
+  }
+
+  .category-list {
+    padding: 10px;
+  }
+
+  .category-item {
+    width: 100%;
+  }
+
+  .profile-image {
+    width: 24px;
+    height: 24px;
+  }
+
+  button {
+    padding: 5px;
+    font-size: 14px;
+  }
+}
+
+
+/* 모달 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 52%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  gap: 15px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background-color: #0057b369;
+  border: none;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.close-button:hover {
+  background-color: #0057b3;
+}
+
+.modal-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.modal-body {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+}
+
+.modal-image {
+  width: 300px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.modal-description {
+  flex: 1;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.description-title {
+  margin-top: 0;
+}

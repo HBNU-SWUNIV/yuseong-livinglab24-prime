@@ -1,0 +1,150 @@
+<!-- 입력 필드 -->
+<input type="file" onchange="getPresignedURLAndSendJuso(this);">
+<br>
+<label for="address">Address:</label>
+<input type="text" id="address" name="address" disabled><br>
+<label for="name">Name:</label>
+<input type="text" id="name" name="name"><br>
+<label for="ds">DS:</label>
+<input type="text" id="ds" name="ds"><br>
+<label for="lat">Latitude:</label>
+<input type="text" id="lat" name="lat" disabled><br>
+<label for="lng">Longitude:</label>
+<input type="text" id="lng" name="lng" disabled><br>
+<button onclick="uploadFile()">저장하기</button>
+
+<!-- 위도 경도 변환 버튼, 기본적으로 숨겨짐 -->
+<button id="convertLatLngBtn" style="display:none;" onclick="convertLatLng()">위도 경도 변환</button>
+
+<script>
+    let fileToUpload = null;  // 업로드할 파일을 저장할 변수
+    let presignedURL = null;  // presigned URL을 저장할 변수
+    let jusoResult = null;  // juso에서 받은 결과를 저장할 변수
+
+    // 1. 파일을 선택하면 presigned URL을 요청하고 그 URL을 저장한 뒤, juso로 파일을 전송하여 결과를 받음
+    async function getPresignedURLAndSendJuso(input) {
+        fileToUpload = input.files[0]; // 파일을 저장
+        if (!fileToUpload) return; // 파일이 없으면 종료
+
+        // 파일 이름을 URL-safe 방식으로 인코딩
+        let name = encodeURIComponent(fileToUpload.name);
+
+        try {
+            // presigned URL을 요청
+            let result = await fetch('/presigned-url?filename=' + name);
+            presignedURL = await result.text();  // presigned URL 저장
+
+            console.log("Presigned URL received:", presignedURL);
+
+            // juso로 파일을 전송하여 결과를 받음
+            let formData = new FormData();
+            formData.append("file", fileToUpload);
+
+            let jusoResponse = await fetch('/juso', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!jusoResponse.ok) throw new Error('/juso 요청 실패');
+
+            jusoResult = await jusoResponse.json();  // juso의 결과를 JSON으로 받음
+            console.log("juso 결과:", jusoResult);  // /juso의 결과를 콘솔에 출력
+
+            // 2. juso에서 받은 결과를 각 입력 칸에 자동으로 채웁니다.
+            document.getElementById('address').value = jusoResult.address || '';
+            document.getElementById('name').value = jusoResult.name || '';
+            document.getElementById('ds').value = jusoResult.ds || '';
+            document.getElementById('lat').value = jusoResult.lat || '';
+            document.getElementById('lng').value = jusoResult.lng || '';
+
+        } catch (error) {
+            console.error('처리 중 에러 발생:', error);
+
+            // juso 실패 시 address 칸을 활성화하고, 변환 버튼을 보여줍니다.
+            document.getElementById('address').disabled = false;
+            document.getElementById('convertLatLngBtn').style.display = 'inline-block';
+        }
+    }
+    // 2. "위도 경도 변환" 버튼 클릭 시 도로명 주소를 사용하여 위도/경도 값 가져오기
+    async function convertLatLng() {
+        const address = document.getElementById('address').value;
+        if (!address) {
+            alert("주소를 입력해주세요.");
+            return;
+        }
+
+        try {
+            // 서버에 도로명 주소를 보내서 lat, lng 값을 받음
+            let response = await fetch('http://localhost:8080/api/lat/lng', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ address: address })
+            });
+
+            if (!response.ok) throw new Error('위도 경도 변환 실패');
+
+            // 서버로부터 받은 lat, lng 값
+            let data = await response.json();
+            console.log("위도/경도 변환 결과:", data);
+
+            // 받은 lat, lng 값 필드에 채우기
+            document.getElementById('lat').value = data.lat || '';
+            document.getElementById('lng').value = data.lng || '';
+        } catch (error) {
+            console.error('위도 경도 변환 중 에러 발생:', error);
+        }
+    }
+
+    // 3. "저장하기" 버튼 클릭 시 파일을 presigned URL에 업로드하고 추가 데이터 전송
+    async function uploadFile() {
+        if (!presignedURL) {
+            console.log("presigned URL이 없습니다. 먼저 파일을 선택해주세요.");
+            return;
+        }
+
+        if (!fileToUpload) {
+            console.log("파일이 선택되지 않았습니다.");
+            return;
+        }
+
+        try {
+            // presigned URL로 파일 업로드 (PUT 요청)
+            let uploadResponse = await fetch(presignedURL, {
+                method: 'PUT',
+                body: fileToUpload
+            });
+
+            if (!uploadResponse.ok) throw new Error('파일 업로드 실패');
+
+            console.log("파일 업로드 성공:", uploadResponse.url.split("?")[0]);  // 업로드된 이미지 URL 출력
+
+            // 4. "저장하기" 버튼 클릭 시 추가 데이터를 함께 POST 요청
+            let data = {
+                address: document.getElementById('address').value,
+                name: document.getElementById('name').value,
+                ds: document.getElementById('ds').value,
+                lat: document.getElementById('lat').value,
+                lng: document.getElementById('lng').value,
+                imageUrl: uploadResponse.url.split("?")[0],  // 파일 업로드 후 URL 추가
+                ok: false
+            };
+
+            // 데이터 전송
+            let response = await fetch('http://localhost:8080/api/data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)  // JSON 형식으로 데이터를 전송
+            });
+
+            if (!response.ok) throw new Error('서버 요청 실패');
+            console.log("서버 응답:", await response.json());
+
+        } catch (error) {
+            console.error('파일 업로드 중 에러 발생:', error);
+        }
+    }
+</script>

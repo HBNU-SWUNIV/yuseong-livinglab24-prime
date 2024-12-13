@@ -151,6 +151,8 @@ public class DataController {
                 double longitude = convertToDecimal(longitudestr);
 
                 // 역지오코딩 API 호출 (Google Maps)
+                // This application uses Google Maps API for reverse geocoding.
+                // Google Maps API Terms of Service: https://developers.google.com/maps/terms
                 String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
                         + latitude + "," + longitude
                         + "&key=" + googleMapsApiKey

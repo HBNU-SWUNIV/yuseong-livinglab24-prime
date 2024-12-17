@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;  // JwtUtil 필드 추가
+    private final JwtUtil jwtUtil;
 
 
     public UserService(UserRepository userRepository, JwtUtil jwtUtil) {
